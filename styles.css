@@ -4,7 +4,39 @@ body {
     width: 100%;
     height: 100%;
     overflow: hidden;
+    background: #fff;
+}
+
+/* Black layer over the white page; holds the dot */
+#curtain {
+    position: fixed;
+    inset: 0;
     background: #000;
+}
+
+/* Small lift, then an accelerating fall below the viewport */
+#curtain.dropping {
+    animation: curtain-drop 1.1s forwards;
+}
+
+@keyframes curtain-drop {
+    0% {
+        translate: 0 0;
+        animation-timing-function: ease-out;
+    }
+    18.18% {
+        translate: 0 -8px;
+        animation-timing-function: cubic-bezier(0.55, 0, 1, 0.45);
+    }
+    100% {
+        translate: 0 100%;
+    }
+}
+
+@keyframes curtain-fade {
+    to {
+        opacity: 0;
+    }
 }
 
 /* Pulse amplitude; registered so it can transition smoothly */
@@ -92,5 +124,9 @@ body {
 
     #dot.pulsing {
         animation: none;
+    }
+
+    #curtain.dropping {
+        animation: curtain-fade 0.5s ease-out forwards;
     }
 }

@@ -1,5 +1,41 @@
 # Changelog
 
+## Backlog
+
+Recorded only; not implemented.
+
+- **Pulse shading:** while hovered and pulsing, the dot gets darker as it grows and brighter
+  as it shrinks (via color or opacity).
+- **Click ripples:** ripples that grow with the click count. After the 1st click, one ripple
+  per pulse beat; after the 2nd click, two ripples in a row per beat.
+
+## v04
+
+### Added
+- **Curtain:** the page background is now white (`#fff`). A full-viewport black layer
+  (`#curtain`, `position: fixed; inset: 0; background: #000`) sits on top from the start, and
+  the dot now lives inside it. Up to the 3rd click everything looks and behaves as before.
+  `index.html` → `<div id="curtain">` wrapping `<div id="dot">`.
+  `styles.css` → `html, body` (`background`), `#curtain`.
+- **Curtain drop on the 3rd click:** the 1.5s dot fade-out is unchanged. When it ends, the
+  curtain drops off the bottom: an 8px lift over 0.2s `ease-out`, then a 0.9s fall to
+  `translate: 0 100%` with `cubic-bezier(0.55, 0, 1, 0.45)` (1.1s total; the lift ends at
+  18.18%). On `animationend` the curtain is removed from the DOM, so nothing blocks the white
+  page.
+  `script.js` → `onTransitionEnd()` (dot `opacity` transition ends while `state.gone`) calls
+  `dropCurtain()`. `styles.css` → `#curtain.dropping`, `@keyframes curtain-drop`.
+- **Reduced motion:** the curtain fades out over 0.5s `ease-out` instead of dropping, then is
+  removed the same way.
+  `styles.css` → `@media (prefers-reduced-motion: reduce)` → `#curtain.dropping`,
+  `@keyframes curtain-fade`.
+
+Tested in headless Chrome:
+- **Before the drop:** the curtain covers the full viewport and the dot is still exactly
+  centered.
+- **Drop:** starts 1.52s after the 3rd click, reaches −8px at 0.20s, falls with
+  acceleration and is removed at 1.1s.
+- **Reduced motion:** the curtain doesn't move, fades out and is removed at 0.5s.
+
 ## v03.2
 
 ### Changed

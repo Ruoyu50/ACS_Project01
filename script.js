@@ -1,3 +1,4 @@
+const curtain = document.getElementById('curtain');
 const dot = document.getElementById('dot');
 
 const MOVE_MARGIN = 0.1;    // fraction of the viewport kept clear on each side
@@ -77,6 +78,13 @@ function fadeOut() {
     dot.classList.add('gone');
 }
 
+function dropCurtain() {
+    curtain.classList.add('dropping');
+    curtain.addEventListener('animationend', (event) => {
+        if (event.target === curtain) curtain.remove();
+    });
+}
+
 function onClick() {
     if (!state.visible || state.moving || state.gone) return;
     state.clicks += 1;
@@ -95,6 +103,8 @@ function onClick() {
 function onTransitionEnd(event) {
     if (event.propertyName === 'left' || event.propertyName === 'top') {
         state.moving = false;
+    } else if (event.propertyName === 'opacity' && state.gone) {
+        dropCurtain();
     }
 }
 
