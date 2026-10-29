@@ -14,7 +14,7 @@ body {
     width: 15px;
     height: 15px;
     border-radius: 50%;
-    background: #333;
+    background: #555;
     translate: -50% -50%;
     opacity: 0;
     transition:
@@ -22,7 +22,8 @@ body {
         width 1s ease-in-out,
         height 1s ease-in-out,
         background-color 1s ease-in-out,
-        scale 0.4s ease-out;
+        left 1.2s cubic-bezier(0.65, 0, 0.35, 1),
+        top 1.2s cubic-bezier(0.65, 0, 0.35, 1);
 }
 
 /* Invisible hit area, larger than the dot */
@@ -37,26 +38,42 @@ body {
     opacity: 1;
 }
 
+#dot.pulsing {
+    animation: pulse 2s ease-in-out infinite;
+}
+
 #dot.hovered {
     width: 40px;
     height: 40px;
-    background: #888;
-    animation: pulse 2s ease-in-out 1s infinite;
+    background: #ddd;
+}
+
+#dot.gone {
+    opacity: 0;
+    pointer-events: none;
+    transition:
+        opacity 1.5s ease-out,
+        width 1s ease-in-out,
+        height 1s ease-in-out,
+        background-color 1s ease-in-out,
+        left 1.2s cubic-bezier(0.65, 0, 0.35, 1),
+        top 1.2s cubic-bezier(0.65, 0, 0.35, 1);
 }
 
 @keyframes pulse {
     0%   { scale: 1; }
-    25%  { scale: 1.08; }
-    75%  { scale: 0.92; }
+    25%  { scale: 1.12; }
+    75%  { scale: 0.88; }
     100% { scale: 1; }
 }
 
 @media (prefers-reduced-motion: reduce) {
-    #dot {
+    #dot,
+    #dot.gone {
         transition-duration: 0.01s;
     }
 
-    #dot.hovered {
+    #dot.pulsing {
         animation: none;
     }
 }
