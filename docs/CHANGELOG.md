@@ -8,6 +8,82 @@ Recorded only; not implemented.
   as it shrinks (via color or opacity).
 - **Click ripples:** ripples that grow with the click count. After the 1st click, one ripple
   per pulse beat; after the 2nd click, two ripples in a row per beat.
+- **Real 3D scene** (e.g. Three.js) if the CSS-faked scene from v04.1 feels too flat.
+
+## v04.1
+
+Everything before the 3rd click is unchanged. The v04 curtain drop (lift + fall right after the
+dot fade-out) is replaced by the sequence below. Times are from the 3rd click.
+
+### Changed
+- **0–1.5s, dot fade-out:** unchanged (1.5s `ease-out`). Nothing else happens until 3.5s.
+  `script.js` → `onClick()` calls `fadeOut()` and `runFinale()`.
+- **3.5s / 4.2s / 4.9s, three impacts:** each a 0.35s camera-shake jolt of the curtain
+  (translate + tiny rotation) that settles back to rest. Each one is stronger than the last:
+
+  | Impact | Max offset | Max rotation |
+  |---|---|---|
+  | 1 | 6px | 0.1° |
+  | 2 | 10px | 0.17° |
+  | 3 | 14px | 0.24° |
+
+  Slivers of the white page show at the edges.
+  `script.js` → `shake()`, `IMPACTS`, `IMPACT_START_MS`, `IMPACT_GAP_MS`, `SHAKE_MS`
+  (Web Animations API on `#curtain`).
+- **~5.25s, tilt:** after the 3rd impact the curtain swings onto one nail and stays rotated
+  2.5° around its top-left corner. The swing is 0.9s: 0 → 3° → 2.3° → 2.5°. White shows along
+  the top and right edges. It doesn't fall.
+  `script.js` → `tilt()`, `TILT_DEG`, `TILT_SWING_MS`. `styles.css` → `#curtain`
+  (`transform-origin: top left`).
+- **~7.15s, final dot:** 1s after the tilt, the dot fades back in at the exact screen center:
+  20px, `#ddd`, opacity 0.5 (0.6s `ease-out`). On hover: opacity 0.75. No size change, no
+  pulse, no move. The tilted curtain is the dot's containing block, so `showFinalDot()` maps
+  the screen center into curtain coordinates.
+  `script.js` → `showFinalDot()`, `state.final`, `state.tilt`, `FINAL_DOT_DELAY_MS`.
+  `styles.css` → `#dot.final`, `#dot.final.hovered`.
+- **Click the final dot → curtain falls:** like a frame coming off a wall. It rotates a
+  further 10° (2.5° → 12.5°) around the same pivot while dropping to `translate: 0 102%` over
+  1.4s, `cubic-bezier(0.11, 0, 0.5, 0)` (ease-in quad, gravity-like). The dot falls with it.
+  The curtain is then removed.
+  `script.js` → `onClick()` (when `state.final`), `dropCurtain()`, `FALL_MS`, `FALL_EXTRA_DEG`,
+  `state.falling`.
+
+### Added
+- **Revealed scene:** a white space with a soft horizon line at ~55% height and a floor
+  gradient that darkens toward the viewer (`#ededed` → `#d2d2d2`). Three orange balls rest on
+  the floor. Each one is CSS-only: a radial-gradient body (`#ffb25a` → `#8a3804`) with a white
+  highlight at the top left, plus a soft elliptical contact shadow offset slightly right.
+  Farther balls sit closer to the horizon and are smaller:
+
+  | Ball | Size | Position (x, y) |
+  |---|---|---|
+  | far | 7vmin | 73%, 62% |
+  | mid | 12vmin | 31%, 72% |
+  | near | 18vmin | 56%, 85% |
+
+  `index.html` → `#scene` with `.ball-far`, `.ball-mid`, `.ball-near`.
+  `styles.css` → `#scene`, `.ball`, `.ball::before` (shadow), `.ball-far / -mid / -near`.
+- **Reduced motion:**
+  - No shakes, tilt or fall.
+  - The final dot fades in at 4.5s (3.5s + 1s).
+  - Clicking it fades the curtain out over 0.6s (`REDUCED_FADE_MS`), then removes it.
+
+  `script.js` → `runFinale()`, `dropCurtain()` (`reducedMotion`).
+
+### Removed
+- **v04 curtain drop** (`#curtain.dropping`, `@keyframes curtain-drop`,
+  `@keyframes curtain-fade`, the old `dropCurtain()`, and the `opacity` branch in
+  `onTransitionEnd()`): replaced by the impacts → tilt → final dot → fall sequence. The
+  curtain motion now runs from `script.js` through the Web Animations API, which makes the
+  timed steps easier to chain.
+
+Tested in headless Chrome at 1000×613:
+- **Normal:**
+  - Curtain motion starts at ~3.5s and ends at `rotate: 2.5deg`.
+  - The final dot appears at ~7.3s and is 0.01px from the screen center.
+  - Hover gives opacity 0.75 at 20px. The curtain is removed 1.4s after the click.
+- **Reduced motion:** no curtain motion. The final dot appears at 4.5s and the curtain
+  fades out and is removed at 0.6s.
 
 ## v04
 
