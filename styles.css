@@ -11,8 +11,8 @@ body {
     position: fixed;
     top: 50%;
     left: 50%;
-    width: 6px;
-    height: 6px;
+    width: 15px;
+    height: 15px;
     border-radius: 50%;
     background: #333;
     transform: translate(-50%, -50%);
@@ -29,7 +29,7 @@ body {
 #dot::before {
     content: '';
     position: absolute;
-    inset: -10px;
+    inset: -25px;
     border-radius: 50%;
 }
 
@@ -38,10 +38,10 @@ body {
 }
 
 #dot.hovered {
-    width: 16px;
-    height: 16px;
+    width: 40px;
+    height: 40px;
     background: #888;
-    animation: pulse 1.2s ease-in-out 1s infinite;
+    animation: pulse 2s ease-in-out 1s infinite;
 }
 
 @keyframes pulse {
