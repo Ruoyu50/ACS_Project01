@@ -1,5 +1,32 @@
 # Changelog
 
+## v03.2
+
+### Changed
+- **Grown dot is still unless hovered:** after the first click the dot keeps its grown look
+  (40px, `#ddd`). Not hovered: `--amp: 0`, so it doesn't pulse. Hovered: `--amp: 0.05`
+  (±5%, 2s). The pulse animation keeps running underneath and `--amp` eases over 1s
+  `ease-in-out`, so starting and stopping has no jump. Measured in headless Chrome: the
+  largest frame-to-frame step across hover on/off (0.0030) matches the steady hovered pulse
+  (0.0029). Before the first click the base dot is unchanged (±12%, ±5% on hover).
+  `styles.css` → `#dot.grown:not(.hovered)`.
+- **Move target avoids the screen center:** besides the 10% margin and the minimum distance
+  from the current position, the target must be at least 100px from the screen center
+  (`CENTER_CLEARANCE = 100`).
+  `script.js` → `randomTarget()`.
+- **A valid target is always found:** `randomTarget()` tries up to 100 random points
+  (`MAX_TRIES = 100`), then falls back to the corner of the margin area farthest from the
+  dot. That corner is always valid:
+  - It is at least half the margin area's diagonal from the dot, which is more than 30% of
+    the shorter side.
+  - The corners are the farthest points from the center.
+
+  On viewports whose margin-area half-diagonal is under 100px (screen diagonal under 250px),
+  the center clearance is capped at that half-diagonal so the corners stay valid. Tested on
+  1440×900, 390×844, 300×260 and 150×120 with the dot anywhere on screen, and with the
+  fallback forced: 0 invalid targets out of 1000 on each.
+  `script.js` → `randomTarget()`.
+
 ## v03.1
 
 ### Changed

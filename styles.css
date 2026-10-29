@@ -59,6 +59,11 @@ body {
     --amp: 0.05;
 }
 
+/* After the first click: still unless hovered */
+#dot.grown:not(.hovered) {
+    --amp: 0;
+}
+
 #dot.gone {
     opacity: 0;
     pointer-events: none;
