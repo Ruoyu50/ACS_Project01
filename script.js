@@ -1,6 +1,5 @@
 const dot = document.getElementById('dot');
 
-const SHRINK_MS = 1000;     // matches the width/height transition
 const MOVE_MARGIN = 0.1;    // fraction of the viewport kept clear on each side
 const MIN_MOVE = 0.3;       // fraction of the viewport's shorter side
 const FADE_OUT_CLICK = 3;
@@ -10,8 +9,8 @@ const state = {
     hovered: false,
     moving: false,
     gone: false,
+    grown: false,
     clicks: 0,
-    resumeTimer: null,
 };
 
 function showDot() {
@@ -22,16 +21,12 @@ function showDot() {
 
 function onEnter() {
     state.hovered = true;
-    clearTimeout(state.resumeTimer);
-    dot.classList.remove('pulsing');
     dot.classList.add('hovered');
 }
 
 function onLeave() {
     state.hovered = false;
     dot.classList.remove('hovered');
-    // Resume the pulse once the dot has shrunk back
-    state.resumeTimer = setTimeout(() => dot.classList.add('pulsing'), SHRINK_MS);
 }
 
 function randomTarget() {
@@ -64,6 +59,11 @@ function fadeOut() {
 function onClick() {
     if (!state.visible || state.moving || state.gone) return;
     state.clicks += 1;
+    if (!state.grown) {
+        // Stay in the grown state for good after the first click
+        state.grown = true;
+        dot.classList.add('grown');
+    }
     if (state.clicks === FADE_OUT_CLICK) {
         fadeOut();
     } else {

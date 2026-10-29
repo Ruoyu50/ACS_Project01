@@ -1,5 +1,30 @@
 # Changelog
 
+## v03.1
+
+### Changed
+- **Pulse keeps running while hovered / grown,** at a smaller amplitude: ±5% grown vs ±12%
+  base, same 2s period. The amplitude is a registered custom property (`--amp`, a
+  `<number>`) used in `@keyframes pulse` (`calc(1 ± var(--amp))`), and it transitions over
+  1s `ease-in-out`. The animation never restarts and only the amplitude eases between the
+  two values, so there is no jump. Measured in headless Chrome: the largest frame-to-frame
+  scale step across a hover switch (0.0137) matches the steady pulse (0.0138).
+  `styles.css` → `@property --amp`, `#dot` (`--amp: 0.12`, `--amp` transition),
+  `#dot.hovered, #dot.grown` (`--amp: 0.05`), `@keyframes pulse`.
+- **Grown for good after the first click:** the first accepted click adds `.grown`
+  (40px, `#ddd`, ±5% pulse), which stays on after the dot moves away from the cursor. The dot
+  never returns to the 15px `#555` base. The 3rd-click fade-out still applies.
+  `script.js` → `onClick()`, `state.grown`. `styles.css` → `#dot.hovered, #dot.grown`.
+- **Slower move:** 1.2s → 2.2s, same `cubic-bezier(0.65, 0, 0.35, 1)`.
+  `styles.css` → `#dot` and `#dot.gone` `transition` (`left`, `top`).
+
+### Removed
+- **Stopping the pulse on hover and restarting it after leave** (`onEnter()` removing
+  `.pulsing`; `onLeave()`'s 1s restart timer, `SHRINK_MS`, `state.resumeTimer`): the pulse
+  now runs continuously and only its amplitude changes.
+- **TODO from v03.0** ("pulse should decelerate to a stop on hover"): resolved by the
+  amplitude transition above, since the pulse no longer stops.
+
 ## v03.0
 
 ### Changed

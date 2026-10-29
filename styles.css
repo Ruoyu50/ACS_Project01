@@ -7,6 +7,13 @@ body {
     background: #000;
 }
 
+/* Pulse amplitude; registered so it can transition smoothly */
+@property --amp {
+    syntax: '<number>';
+    inherits: false;
+    initial-value: 0.12;
+}
+
 #dot {
     position: fixed;
     top: 50%;
@@ -17,13 +24,15 @@ body {
     background: #555;
     translate: -50% -50%;
     opacity: 0;
+    --amp: 0.12;
     transition:
         opacity 2s ease-out,
         width 1s ease-in-out,
         height 1s ease-in-out,
         background-color 1s ease-in-out,
-        left 1.2s cubic-bezier(0.65, 0, 0.35, 1),
-        top 1.2s cubic-bezier(0.65, 0, 0.35, 1);
+        left 2.2s cubic-bezier(0.65, 0, 0.35, 1),
+        top 2.2s cubic-bezier(0.65, 0, 0.35, 1),
+        --amp 1s ease-in-out;
 }
 
 /* Invisible hit area, larger than the dot */
@@ -42,10 +51,12 @@ body {
     animation: pulse 2s ease-in-out infinite;
 }
 
-#dot.hovered {
+#dot.hovered,
+#dot.grown {
     width: 40px;
     height: 40px;
     background: #ddd;
+    --amp: 0.05;
 }
 
 #dot.gone {
@@ -56,14 +67,15 @@ body {
         width 1s ease-in-out,
         height 1s ease-in-out,
         background-color 1s ease-in-out,
-        left 1.2s cubic-bezier(0.65, 0, 0.35, 1),
-        top 1.2s cubic-bezier(0.65, 0, 0.35, 1);
+        left 2.2s cubic-bezier(0.65, 0, 0.35, 1),
+        top 2.2s cubic-bezier(0.65, 0, 0.35, 1),
+        --amp 1s ease-in-out;
 }
 
 @keyframes pulse {
     0%   { scale: 1; }
-    25%  { scale: 1.12; }
-    75%  { scale: 0.88; }
+    25%  { scale: calc(1 + var(--amp)); }
+    75%  { scale: calc(1 - var(--amp)); }
     100% { scale: 1; }
 }
 
